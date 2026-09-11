@@ -5,13 +5,13 @@
       "id": "explicit-html-tutorial",
       "invocation": "explicit",
       "should_activate": true,
-      "prompt": "$doctoral-field-training Create a complete Chinese HTML tutorial for reinforcement learning in /tmp/rl-doctoral-tutorial. I know machine learning and PyTorch, can spend 10 hours per week for six months, and want to develop research judgment.",
+      "prompt": "$doctoral-field-training Create a Chinese HTML tutorial for reinforcement learning in /tmp/rl-doctoral-tutorial. I know machine learning and PyTorch, can spend 10 hours per week for six months, and want to develop research judgment.",
       "expected_behaviors": [
         "Treats reinforcement learning history as a causal problem genealogy",
-        "Builds the complete site as a collection of review-paper-style chapters whose table of contents is the learning outline",
+        "Plans the complete table of contents but generates only the first review-paper-style chapter",
         "Writes the tutorial site into the exact requested folder",
-        "Generates index.html, assets/styles.css, and data/tutorial.json without an interactive training application",
-        "Verifies the generated files and reports the exact output path"
+        "Generates index.html, assets/styles.css, data/tutorial.json, and data/learning-state.json",
+        "Asks the learner to read Chapter 1 in HTML and explicitly acknowledge completion before Chapter 2 is generated"
       ]
     },
     {
@@ -23,7 +23,7 @@
         "Recognizes the request as doctoral field training",
         "Accepts database systems as a legitimate research direction",
         "Asks for the output folder before producing content",
-        "Does not substitute a chat lesson, interactive coaching session, or standalone outline"
+        "Does not substitute a pasted chat lesson or standalone outline for the incremental HTML textbook"
       ]
     },
     {
@@ -46,7 +46,7 @@
         "Uses available research tools before treating exact citations as authoritative",
         "Labels citation confidence according to the skill rules",
         "Includes predecessor, turning-point, critical, and synthesis works",
-        "Produces the complete HTML collection rather than a chat-based first module"
+        "Produces Chapter 1 in HTML and waits for reading acknowledgement before later chapter bodies"
       ]
     },
     {
@@ -96,13 +96,30 @@
         "Treats every chapter as a review article about one historical problem, competing approaches, evidence, decision, consequences, and unresolved questions",
         "Connects historical decisions to standards, architecture documents, source code, tests, bugs, commits, benchmarks, and traces",
         "Defines a source-mastery progression from building and tracing the browser through reproduction, instrumentation, modification, evaluation, and original contribution",
-        "Generates and verifies the complete HTML tutorial in the exact requested folder"
+        "Generates and verifies the complete table of contents and first HTML chapter in the exact requested folder, with durable resume state"
       ],
       "forbidden_behaviors": [
         "Organizes the main curriculum as weeks of HTML, JavaScript, React, TypeScript, component libraries, build tools, or interview questions",
         "Promises doctoral expertise through a crash course or fixed short schedule",
         "Uses a paper list as decoration for an ordinary frontend-engineering syllabus",
         "Stops at public browser APIs without requiring source-level investigation"
+      ]
+    },
+    {
+      "id": "resume-and-advance",
+      "invocation": "explicit",
+      "should_activate": true,
+      "prompt": "$doctoral-field-training Resume /tmp/browser-doctoral-tutorial. I finished the current chapter. My unresolved question is why the earlier architecture could not isolate rendering failures.",
+      "expected_behaviors": [
+        "Reads tutorial.json and learning-state.json from the supplied output folder instead of relying on conversation history",
+        "Records the exact reading acknowledgement and unresolved question in durable memory",
+        "Generates exactly the next planned review-paper chapter and rebuilds the HTML",
+        "Reports the new current chapter and asks the learner to read it before advancing again"
+      ],
+      "forbidden_behaviors": [
+        "Restarts field admission or regenerates completed chapters",
+        "Treats reading acknowledgement as proof of doctoral mastery",
+        "Generates all remaining chapter bodies at once"
       ]
     },
     {

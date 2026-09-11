@@ -6,7 +6,7 @@ The repository is packaged as a skills-only plugin for ChatGPT, Codex, and compa
 
 ## Available skills
 
-- [`doctoral-field-training`](skills/doctoral-field-training/SKILL.md): generates an offline HTML collection of interconnected review papers that develops doctoral judgment through a field's technical history, primary literature, research artifacts, and frontier.
+- [`doctoral-field-training`](skills/doctoral-field-training/SKILL.md): guides a resumable doctoral reading process through an offline HTML textbook, revealing one interconnected review-paper chapter at a time after the learner confirms the preceding chapter was read.
 
 ## Repository structure
 
@@ -55,7 +55,7 @@ See [docs/testing.md](docs/testing.md) for explicit, implicit, negative, and beh
 
 ## HTML tutorial output
 
-`doctoral-field-training` generates one deliverable: a complete offline collection of review-paper-style tutorials in a folder chosen by the user. The table of contents is the curriculum outline. Its bundled builder produces:
+`doctoral-field-training` plans a complete review-paper textbook in a folder chosen by the user, generates Chapter 1, and waits for the learner to return to the agent with an explicit reading acknowledgement before generating each next chapter. Its bundled tools produce and maintain:
 
 ```text
 <output-folder>/
@@ -63,10 +63,11 @@ See [docs/testing.md](docs/testing.md) for explicit, implicit, negative, and beh
 ├── assets/
 │   └── styles.css
 └── data/
-    └── tutorial.json
+    ├── tutorial.json
+    └── learning-state.json
 ```
 
-The HTML works directly from the filesystem and has no remote runtime dependencies. See the skill's [tutorial contract](skills/doctoral-field-training/references/tutorial-contract.md) for the required scholarly and presentation structure.
+The HTML works directly from the filesystem and has no remote runtime dependencies. The JSON files are the portable source of truth for resuming in a later conversation; RAG, Wiki views, and Skill UI Studio are optional adapters. See the skill's [tutorial contract](skills/doctoral-field-training/references/tutorial-contract.md) and [learning-memory contract](skills/doctoral-field-training/references/learning-loop-and-memory.md).
 
 ## Installation
 

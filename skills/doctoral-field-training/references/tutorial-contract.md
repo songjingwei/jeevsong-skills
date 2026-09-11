@@ -4,7 +4,7 @@ Read this reference whenever producing a tutorial website.
 
 ## Content model
 
-The tutorial is a scholarly narrative, not a documentation portal assembled from independent topics. Its top-level thesis explains how the field changed as successive approaches encountered limits. Chapters are ordered by causal dependence and historical transition.
+The tutorial is a progressively revealed scholarly narrative, not a documentation portal assembled from independent topics. Its top-level thesis explains how the field changed as successive approaches encountered limits. The complete chapter plan is ordered by causal dependence and historical transition, while chapter bodies are generated one at a time.
 
 The source `tutorial.json` must conform to `assets/tutorial.schema.json`. In particular:
 
@@ -14,7 +14,8 @@ The source `tutorial.json` must conform to `assets/tutorial.schema.json`. In par
 - `reviewMethod` explains how sources were selected and verified.
 - `researchQuestions` state the questions the review will answer.
 - `researchPractice` defines the primary artifacts, apprenticeship sequence, and frontier contribution that make the program research training rather than coursework.
-- `chapters` each represent one defensible transition in the problem genealogy.
+- `chapterPlan` declares the complete trajectory with stable IDs, periods, transition summaries, dependencies, and source requirements.
+- `chapters` contains only generated review articles. At initialization it contains exactly Chapter 1; each acknowledgement appends exactly one next planned chapter.
 - `crossChapterSynthesis` compares transitions and resolves the main thesis.
 - `openProblems` connect unresolved tensions to researchable questions.
 - `doctoralRubric` defines observable standards of judgment.
@@ -55,14 +56,16 @@ The generated output is a self-contained static site:
 ├── assets/
 │   └── styles.css
 └── data/
-    └── tutorial.json
+    ├── tutorial.json
+    └── learning-state.json
 ```
 
 The site must:
 
 - Open directly from `index.html` without a build step or server.
-- Preserve the full tutorial in semantic HTML.
-- Provide a table of contents with stable chapter anchors.
+- Preserve all generated tutorial content in semantic HTML.
+- Show the complete table of contents with stable chapter anchors and visibly distinguish available, read, and planned chapters.
+- Show the current reading state and tell the learner to return to the agent after finishing the available chapter.
 - Show citation-confidence labels.
 - Require no JavaScript; the table of contents is the complete learning outline and navigation system.
 - Avoid remote fonts, CDNs, analytics, and network dependencies.
@@ -76,7 +79,8 @@ Before handoff:
 
 1. Validate the source JSON.
 2. Confirm all three managed output files exist.
-3. Confirm the field-admission statement, tutorial title, every chapter, synthesis, open problems, rubric, and bibliography appear in `index.html`.
+3. Confirm the field-admission statement, tutorial title, complete chapter plan, and every generated chapter appear in `index.html`.
 4. Confirm navigation anchors are unique and point to existing sections.
 5. Confirm special characters are escaped rather than interpreted as markup.
-6. Open the site in a browser when available and inspect at least one desktop and one narrow viewport.
+6. Confirm that `learning-state.json` agrees with the plan and generated chapter IDs.
+7. Open the site in a browser when available and inspect at least one desktop and one narrow viewport.

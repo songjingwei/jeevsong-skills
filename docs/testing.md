@@ -57,11 +57,28 @@ Artifact-producing skills require executable tests in addition to prompt cases. 
 
 For `doctoral-field-training`, the automated test builds a tutorial in a temporary directory and verifies:
 
-- All managed HTML, CSS, and JSON files are created.
-- Review sections and chapter anchors are present.
+- HTML, CSS, canonical tutorial data, and durable learning state are created.
+- The complete chapter plan is visible, while only the first chapter body is initially available.
+- Explicit reading acknowledgement marks the current chapter read and unlocks exactly one next chapter.
+- Rebuilding after next-chapter generation preserves memory and makes that chapter available.
 - Source text is HTML-escaped.
 - Existing managed output is not overwritten without `--force`.
 - `--force` updates managed files without deleting unrelated files.
+
+To inspect resume state:
+
+```bash
+python3 skills/doctoral-field-training/scripts/manage_progress.py status \
+  --output "$output_dir"
+```
+
+Record a question without advancing the chapter:
+
+```bash
+python3 skills/doctoral-field-training/scripts/manage_progress.py remember \
+  --output "$output_dir" \
+  --question "Which assumption is doing the real work?"
+```
 
 To inspect a generated fixture manually:
 

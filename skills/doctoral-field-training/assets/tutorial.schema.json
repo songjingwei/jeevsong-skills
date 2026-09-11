@@ -17,6 +17,7 @@
     "researchQuestions",
     "prerequisites",
     "researchPractice",
+    "chapterPlan",
     "chapters",
     "crossChapterSynthesis",
     "openProblems",
@@ -94,6 +95,11 @@
         "frontierContribution": { "type": "string", "minLength": 1 }
       }
     },
+    "chapterPlan": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/chapterPlanItem" }
+    },
     "chapters": {
       "type": "array",
       "minItems": 1,
@@ -125,6 +131,39 @@
     }
   },
   "$defs": {
+    "chapterPlanItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "period",
+        "transitionSummary",
+        "dependsOn",
+        "sourceRequirements"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "title": { "type": "string", "minLength": 1 },
+        "period": { "type": "string", "minLength": 1 },
+        "transitionSummary": { "type": "string", "minLength": 1 },
+        "dependsOn": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          }
+        },
+        "sourceRequirements": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
     "priorApproach": {
       "type": "object",
       "additionalProperties": false,

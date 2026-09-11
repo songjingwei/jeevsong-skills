@@ -8,6 +8,7 @@ import html
 import json
 import re
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -16,6 +17,7 @@ MANAGED_FILES = (
     Path("index.html"),
     Path("assets/styles.css"),
     Path("data/tutorial.json"),
+    Path("data/learning-state.json"),
 )
 ID_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 SOURCE_STATUSES = {
@@ -23,6 +25,10 @@ SOURCE_STATUSES = {
     "canonical-but-unverified-in-this-session",
     "candidate",
 }
+
+
+def utc_now() -> str:
+    return datetime.now(timezone.utc).isoformat()
 
 
 def escaped(value: object) -> str:
@@ -141,19 +147,31 @@ def render_chapter(chapter: dict[str, object], number: int) -> str:
     """
 
 
-def render_html(data: dict[str, object]) -> str:
+def render_html(data: dict[str, object], state: dict[str, object]) -> str:
     chapters = data["chapters"]
+    chapter_plan = data["chapterPlan"]
     rubric = data["doctoralRubric"]
     qualification = data["fieldQualification"]
     research_practice = data["researchPractice"]
     assert isinstance(chapters, list)
+    assert isinstance(chapter_plan, list)
     assert isinstance(rubric, list)
     assert isinstance(qualification, dict)
     assert isinstance(research_practice, dict)
+    generated_ids = {chapter["id"] for chapter in chapters}
+    state_items = state["chapters"]
+    assert isinstance(state_items, list)
+    statuses = {item["id"]: item["status"] for item in state_items}
     nav = "".join(
-        f'<li><a href="#{escaped(chapter["id"])}">'
-        f'{index}. {escaped(chapter["title"])}</a></li>'
-        for index, chapter in enumerate(chapters, 1)
+        (
+            f'<li><a href="#{escaped(item["id"])}">'
+            f'{index}. {escaped(item["title"])} '
+            f'<small>{escaped(statuses[item["id"]])}</small></a></li>'
+            if item["id"] in generated_ids
+            else f'<li class="planned-chapter"><span>{index}. '
+            f'{escaped(item["title"])}</span><small>{escaped(statuses[item["id"]])}</small></li>'
+        )
+        for index, item in enumerate(chapter_plan, 1)
     )
     chapter_html = "".join(
         render_chapter(chapter, index)
@@ -164,6 +182,45 @@ def render_html(data: dict[str, object]) -> str:
         f"<td>{escaped(item['standard'])}</td></tr>"
         for item in rubric
     )
+    current_id = state.get("currentChapterId")
+    current_title = next(
+        (item["title"] for item in chapter_plan if item["id"] == current_id),
+        "Textbook complete",
+    )
+    completed_count = sum(1 for status in statuses.values() if status == "read")
+    progression = (
+        '<p class="progress-instruction">Read the available chapter, then return '
+        'to the agent and say <strong>“读完了”</strong> or '
+        '<strong>“I finished this chapter.”</strong> The next chapter will be generated then.</p>'
+        if state["status"] == "awaiting-reading"
+        else '<p class="progress-instruction">Return to the agent to generate the next planned chapter.</p>'
+        if state["status"] == "ready-to-generate"
+        else '<p class="progress-instruction">All planned chapters have been read.</p>'
+    )
+    final_sections = ""
+    if state["status"] == "complete":
+        final_sections = f"""
+      <section class="closing-section" id="cross-synthesis">
+        <p class="eyebrow">Across the literature</p>
+        <h2>Cross-period synthesis</h2>
+        <p>{escaped(data['crossChapterSynthesis'])}</p>
+      </section>
+      <section class="closing-section" id="research-frontier">
+        <p class="eyebrow">Research agenda</p>
+        <h2>Open problems</h2>
+        {render_list(data['openProblems'], "open-problems")}
+      </section>
+      <section class="closing-section" id="doctoral-rubric">
+        <p class="eyebrow">Assessment</p>
+        <h2>Doctoral capability rubric</h2>
+        <div class="table-wrap"><table><thead><tr><th>Capability</th><th>Doctoral standard</th></tr></thead><tbody>{rubric_rows}</tbody></table></div>
+      </section>
+      <section class="closing-section" id="bibliography">
+        <p class="eyebrow">Source trail</p>
+        <h2>Bibliography</h2>
+        {render_works(data['bibliography'])}
+      </section>
+        """
     return f"""<!doctype html>
 <html lang="{escaped(data['language'])}">
 <head>
@@ -195,10 +252,6 @@ def render_html(data: dict[str, object]) -> str:
           <li><a href="#research-practice">Research practice</a></li>
           <li><a href="#problem-lineage">Problem lineage</a></li>
           {nav}
-          <li><a href="#cross-synthesis">Cross-period synthesis</a></li>
-          <li><a href="#research-frontier">Research frontier</a></li>
-          <li><a href="#doctoral-rubric">Doctoral rubric</a></li>
-          <li><a href="#bibliography">Bibliography</a></li>
         </ol>
       </nav>
     </aside>
@@ -248,31 +301,17 @@ def render_html(data: dict[str, object]) -> str:
       <section class="lineage" id="problem-lineage">
         <p class="eyebrow">Problem genealogy</p>
         <h2>How the field changes</h2>
+        <div class="reading-progress">
+          <strong>{completed_count} of {len(chapter_plan)} chapters read</strong>
+          <span>Current: {escaped(current_title)}</span>
+          {progression}
+        </div>
         <ol class="lineage-list">
-          {''.join(f'<li><a href="#{escaped(chapter["id"])}"><span>{index}</span><strong>{escaped(chapter["title"])}</strong><small>{escaped(chapter["period"])}</small></a></li>' for index, chapter in enumerate(chapters, 1))}
+          {''.join((f'<li><a href="#{escaped(item["id"])}"><span>{index}</span><strong>{escaped(item["title"])}</strong><small>{escaped(item["period"])} · {escaped(statuses[item["id"]])}</small></a></li>' if item["id"] in generated_ids else f'<li class="planned-chapter"><span>{index}</span><strong>{escaped(item["title"])}</strong><small>{escaped(item["period"])} · {escaped(statuses[item["id"]])}</small></li>') for index, item in enumerate(chapter_plan, 1))}
         </ol>
       </section>
       {chapter_html}
-      <section class="closing-section" id="cross-synthesis">
-        <p class="eyebrow">Across the literature</p>
-        <h2>Cross-period synthesis</h2>
-        <p>{escaped(data['crossChapterSynthesis'])}</p>
-      </section>
-      <section class="closing-section" id="research-frontier">
-        <p class="eyebrow">Research agenda</p>
-        <h2>Open problems</h2>
-        {render_list(data['openProblems'], "open-problems")}
-      </section>
-      <section class="closing-section" id="doctoral-rubric">
-        <p class="eyebrow">Assessment</p>
-        <h2>Doctoral capability rubric</h2>
-        <div class="table-wrap"><table><thead><tr><th>Capability</th><th>Doctoral standard</th></tr></thead><tbody>{rubric_rows}</tbody></table></div>
-      </section>
-      <section class="closing-section" id="bibliography">
-        <p class="eyebrow">Source trail</p>
-        <h2>Bibliography</h2>
-        {render_works(data['bibliography'])}
-      </section>
+      {final_sections}
     </main>
   </div>
 </body>
@@ -299,6 +338,7 @@ def validate(data: object) -> list[str]:
     list_fields = (
         "researchQuestions",
         "prerequisites",
+        "chapterPlan",
         "chapters",
         "openProblems",
         "doctoralRubric",
@@ -378,6 +418,51 @@ def validate(data: object) -> list[str]:
                 "researchPractice.frontierContribution must be a non-empty string"
             )
 
+    chapter_plan = data.get("chapterPlan")
+    plan_ids: list[str] = []
+    if not isinstance(chapter_plan, list) or not chapter_plan:
+        errors.append("chapterPlan must contain at least one item")
+    else:
+        for index, item in enumerate(chapter_plan, 1):
+            context = f"chapterPlan item {index}"
+            if not isinstance(item, dict):
+                errors.append(f"{context} must be an object")
+                continue
+            for key in ("id", "title", "period", "transitionSummary"):
+                if not isinstance(item.get(key), str) or not item[key].strip():
+                    errors.append(f"{context}.{key} must be a non-empty string")
+            item_id = item.get("id")
+            if isinstance(item_id, str):
+                if not ID_PATTERN.fullmatch(item_id):
+                    errors.append(f"{context}.id must use lowercase kebab-case")
+                elif item_id in plan_ids:
+                    errors.append(f"duplicate chapterPlan id: {item_id}")
+                else:
+                    plan_ids.append(item_id)
+            dependencies = item.get("dependsOn")
+            if not isinstance(dependencies, list) or not all(
+                isinstance(dependency, str) and dependency.strip()
+                for dependency in dependencies
+            ):
+                errors.append(f"{context}.dependsOn must be an array of IDs")
+            sources = item.get("sourceRequirements")
+            if not isinstance(sources, list) or not sources or not all(
+                isinstance(source, str) and source.strip() for source in sources
+            ):
+                errors.append(
+                    f"{context}.sourceRequirements must be a non-empty array"
+                )
+        known_ids: set[str] = set()
+        for index, item in enumerate(chapter_plan, 1):
+            if not isinstance(item, dict) or not isinstance(item.get("id"), str):
+                continue
+            for dependency in item.get("dependsOn", []):
+                if dependency not in known_ids:
+                    errors.append(
+                        f"chapterPlan item {index}.dependsOn must reference an earlier chapter"
+                    )
+            known_ids.add(item["id"])
+
     chapters = data.get("chapters")
     if not isinstance(chapters, list) or not chapters:
         errors.append("chapters must contain at least one chapter")
@@ -448,6 +533,13 @@ def validate(data: object) -> list[str]:
             ):
                 errors.append(f"{context}.{key} must contain only non-empty strings")
 
+    if plan_ids and isinstance(chapters, list):
+        generated_ids = [
+            chapter.get("id") for chapter in chapters if isinstance(chapter, dict)
+        ]
+        if generated_ids != plan_ids[: len(generated_ids)]:
+            errors.append("chapters must be a contiguous prefix of chapterPlan")
+
     collections: list[tuple[str, object]] = [("bibliography", data.get("bibliography"))]
     if isinstance(chapters, list):
         collections.extend(
@@ -488,25 +580,27 @@ def validate(data: object) -> list[str]:
 
 
 STYLES = """
-:root { color-scheme: light; --ink:#17211b; --muted:#5f6d64; --paper:#f6f3ea; --card:#fffdf7; --line:#d8d2c3; --accent:#9b3d20; --green:#254f3c; }
+:root { color-scheme:light; --ink:#171717; --muted:#65615b; --paper:#f3f0e9; --card:#fffefa; --line:#cfc9bd; --accent:#7a2f24; --green:#31483c; }
 * { box-sizing:border-box; }
 html { scroll-behavior:smooth; }
 body { margin:0; color:var(--ink); background:var(--paper); font-family:Georgia,"Times New Roman",serif; line-height:1.7; }
 a { color:var(--green); text-underline-offset:.2em; }
 .skip-link { position:absolute; left:-999px; top:1rem; background:#fff; padding:.75rem 1rem; z-index:10; }
 .skip-link:focus { left:1rem; }
-.hero { background:var(--ink); color:#fff; padding:clamp(3rem,8vw,7rem) 1.5rem; }
+.hero { background:var(--card); color:var(--ink); padding:clamp(3rem,7vw,6rem) 1.5rem; border-bottom:1px solid var(--line); }
 .hero-inner { max-width:1100px; margin:auto; }
-.hero h1 { max-width:900px; margin:.35rem 0 1rem; font-size:clamp(2.6rem,7vw,6rem); line-height:.98; letter-spacing:-.045em; }
-.hero-summary { max-width:760px; color:#dce3dd; font-size:1.15rem; }
+.hero h1 { max-width:900px; margin:.35rem 0 1rem; font-size:clamp(2.45rem,6vw,5rem); line-height:1.02; letter-spacing:-.035em; }
+.hero-summary { max-width:760px; color:var(--muted); font-size:1.15rem; }
 .eyebrow,.nav-title { font-family:ui-sans-serif,system-ui,sans-serif; font-size:.74rem; font-weight:800; letter-spacing:.13em; text-transform:uppercase; }
-.outcome-card { max-width:760px; margin-top:2rem; padding:1rem 1.2rem; border-left:4px solid #e79365; background:#ffffff10; display:grid; gap:.3rem; }
-.outcome-card span { color:#bdc9c0; font:700 .72rem ui-sans-serif,system-ui,sans-serif; text-transform:uppercase; letter-spacing:.1em; }
+.outcome-card { max-width:760px; margin-top:2rem; padding:1rem 1.2rem; border-left:3px solid var(--accent); background:var(--paper); display:grid; gap:.3rem; }
+.outcome-card span { color:var(--muted); font:700 .72rem ui-sans-serif,system-ui,sans-serif; text-transform:uppercase; letter-spacing:.1em; }
 .layout { max-width:1280px; margin:auto; display:grid; grid-template-columns:270px minmax(0,820px); gap:clamp(2rem,5vw,5rem); padding:3rem 1.5rem 7rem; }
 .sidebar { position:sticky; top:1rem; align-self:start; max-height:calc(100vh - 2rem); overflow:auto; font-family:ui-sans-serif,system-ui,sans-serif; font-size:.88rem; }
 .sidebar ol { list-style:none; padding:0; margin:0; }
 .sidebar a { display:block; padding:.38rem 0; color:var(--muted); text-decoration:none; }
 .sidebar a:hover,.sidebar a:focus { color:var(--accent); }
+.sidebar small { margin-left:.35rem; color:var(--muted); }
+.sidebar .planned-chapter { display:grid; gap:.1rem; padding:.38rem 0; color:var(--muted); }
 main { min-width:0; }
 h2 { margin:.2rem 0 1.5rem; font-size:clamp(2rem,4vw,3.2rem); line-height:1.08; letter-spacing:-.03em; }
 h3 { margin:0 0 .65rem; line-height:1.25; }
@@ -521,6 +615,9 @@ h3 { margin:0 0 .65rem; line-height:1.25; }
 .lineage-list a { display:grid; grid-template-columns:2.3rem 1fr auto; gap:1rem; align-items:center; padding:1rem; background:var(--card); border:1px solid var(--line); text-decoration:none; }
 .lineage-list span { display:grid; place-items:center; width:2.2rem; height:2.2rem; border-radius:50%; color:#fff; background:var(--accent); }
 .lineage-list small { color:var(--muted); }
+.lineage-list .planned-chapter { display:grid; grid-template-columns:2.3rem 1fr auto; gap:1rem; align-items:center; padding:1rem; color:var(--muted); border:1px dashed var(--line); background:transparent; }
+.reading-progress { margin:1.25rem 0 1.75rem; padding:1.2rem 1.35rem; border:1px solid var(--line); background:var(--card); display:grid; gap:.35rem; }
+.progress-instruction { margin:.35rem 0 0; color:var(--muted); }
 .chapter { border-top:5px solid var(--ink); padding-top:2rem; }
 .chapter-header { margin-bottom:2rem; }
 .chapter-header h2 { margin-bottom:0; }
@@ -553,6 +650,116 @@ def write_text(path: Path, content: str) -> None:
     temporary.replace(path)
 
 
+def initialize_state(data: dict[str, object]) -> dict[str, object]:
+    chapters = data["chapters"]
+    plan = data["chapterPlan"]
+    qualification = data["fieldQualification"]
+    assert isinstance(chapters, list)
+    assert isinstance(plan, list)
+    assert isinstance(qualification, dict)
+    if len(chapters) != 1 or chapters[0]["id"] != plan[0]["id"]:
+        raise ValueError(
+            "a new workspace must contain the complete chapterPlan and Chapter 1 only"
+        )
+    now = utc_now()
+    first_id = plan[0]["id"]
+    return {
+        "schemaVersion": "doctoral-field-training/state/v1",
+        "field": data["field"],
+        "status": "awaiting-reading",
+        "currentChapterId": first_id,
+        "chapters": [
+            {
+                "id": item["id"],
+                "status": "available" if index == 0 else "planned",
+                **({"generatedAt": now} if index == 0 else {}),
+            }
+            for index, item in enumerate(plan)
+        ],
+        "memory": {
+            "learner": {
+                "requestedDirection": qualification["requestedDirection"],
+                "admittedResearchField": qualification["admittedResearchField"],
+                "doctoralOutcome": data["doctoralOutcome"],
+                "preferences": [],
+            },
+            "chapterRecords": {
+                item["id"]: {
+                    "acknowledgements": [],
+                    "reflections": [],
+                    "questions": [],
+                    "masteryEvidence": [],
+                    "misconceptions": [],
+                    "unresolvedQuestions": [],
+                    "memoryUsed": [],
+                }
+                for item in plan
+            },
+        },
+        "events": [
+            {
+                "type": "chapter-generated",
+                "chapterId": first_id,
+                "at": now,
+            }
+        ],
+        "updatedAt": now,
+    }
+
+
+def load_and_sync_state(
+    data: dict[str, object], output_path: Path
+) -> dict[str, object]:
+    state_path = output_path / "data/learning-state.json"
+    if not state_path.exists():
+        return initialize_state(data)
+    try:
+        state = json.loads(state_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as error:
+        raise ValueError(f"invalid learning state: {error}") from error
+    if not isinstance(state, dict):
+        raise ValueError("learning state root must be an object")
+    if state.get("schemaVersion") != "doctoral-field-training/state/v1":
+        raise ValueError("unsupported learning-state schemaVersion")
+    if state.get("field") != data["field"]:
+        raise ValueError("tutorial field conflicts with saved learning state")
+
+    plan = data["chapterPlan"]
+    chapters = data["chapters"]
+    state_chapters = state.get("chapters")
+    if not isinstance(plan, list) or not isinstance(chapters, list):
+        raise ValueError("invalid tutorial plan")
+    if not isinstance(state_chapters, list):
+        raise ValueError("learning state chapters must be an array")
+    plan_ids = [item["id"] for item in plan]
+    if [item.get("id") for item in state_chapters] != plan_ids:
+        raise ValueError("chapterPlan conflicts with saved learning state")
+
+    generated_ids = {chapter["id"] for chapter in chapters}
+    newly_generated = [
+        item
+        for item in state_chapters
+        if item["id"] in generated_ids and "generatedAt" not in item
+    ]
+    if len(newly_generated) > 1 or any(
+        item.get("status") != "ready" for item in newly_generated
+    ):
+        raise ValueError("generate exactly the one chapter marked ready")
+    if newly_generated:
+        now = utc_now()
+        item = newly_generated[0]
+        item["status"] = "available"
+        item["generatedAt"] = now
+        state["status"] = "awaiting-reading"
+        state["currentChapterId"] = item["id"]
+        events = state.setdefault("events", [])
+        events.append(
+            {"type": "chapter-generated", "chapterId": item["id"], "at": now}
+        )
+        state["updatedAt"] = now
+    return state
+
+
 def build(input_path: Path, output_path: Path, force: bool) -> None:
     try:
         data = json.loads(input_path.read_text(encoding="utf-8"))
@@ -570,11 +777,16 @@ def build(input_path: Path, output_path: Path, force: bool) -> None:
         joined = ", ".join(str(path) for path in existing)
         raise ValueError(f"managed output already exists ({joined}); pass --force to overwrite")
 
-    write_text(output_path / "index.html", render_html(data))
+    state = load_and_sync_state(data, output_path)
+    write_text(output_path / "index.html", render_html(data, state))
     write_text(output_path / "assets/styles.css", STYLES)
     write_text(
         output_path / "data/tutorial.json",
         json.dumps(data, ensure_ascii=False, indent=2),
+    )
+    write_text(
+        output_path / "data/learning-state.json",
+        json.dumps(state, ensure_ascii=False, indent=2),
     )
 
 

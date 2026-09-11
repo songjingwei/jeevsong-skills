@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jeevsong/jeevsong-skills/schemas/doctoral-field-training-learning-state.schema.json",
+  "title": "Doctoral Field Training Learning State",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "field",
+    "status",
+    "currentChapterId",
+    "chapters",
+    "memory",
+    "events",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "doctoral-field-training/state/v1" },
+    "field": { "type": "string", "minLength": 1 },
+    "status": {
+      "type": "string",
+      "enum": ["awaiting-reading", "ready-to-generate", "complete"]
+    },
+    "currentChapterId": { "type": ["string", "null"] },
+    "chapters": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "status"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "status": {
+            "type": "string",
+            "enum": ["planned", "ready", "available", "read", "stale", "failed"]
+          },
+          "generatedAt": { "type": "string" },
+          "readAt": { "type": "string" }
+        }
+      }
+    },
+    "memory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["learner", "chapterRecords"],
+      "properties": {
+        "learner": { "type": "object" },
+        "chapterRecords": { "type": "object" }
+      }
+    },
+    "events": { "type": "array", "items": { "type": "object" } },
+    "updatedAt": { "type": "string" }
+  }
+}

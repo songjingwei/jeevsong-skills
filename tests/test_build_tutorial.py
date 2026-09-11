@@ -16,6 +16,13 @@ BUILDER = (
     / "scripts"
     / "build_tutorial.py"
 )
+PROGRESS = (
+    ROOT
+    / "skills"
+    / "doctoral-field-training"
+    / "scripts"
+    / "manage_progress.py"
+)
 FIXTURE = (
     ROOT
     / "tests"
@@ -47,7 +54,7 @@ class BuildTutorialTest(unittest.TestCase):
             text=True,
         )
 
-    def test_builds_complete_offline_site(self) -> None:
+    def test_builds_first_chapter_and_durable_learning_state(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
             output = Path(temporary_directory) / "tutorial-site"
             result = self.run_builder(output)
@@ -57,6 +64,7 @@ class BuildTutorialTest(unittest.TestCase):
                 "index.html",
                 "assets/styles.css",
                 "data/tutorial.json",
+                "data/learning-state.json",
             ):
                 self.assertTrue((output / relative_path).is_file(), relative_path)
 
@@ -73,8 +81,11 @@ class BuildTutorialTest(unittest.TestCase):
             self.assertIn("Primary-artifact investigation", page)
             self.assertIn("Trace the agreement threshold", page)
             self.assertIn('id="coordination-crisis"', page)
-            self.assertIn("Cross-period synthesis", page)
-            self.assertIn("Doctoral capability rubric", page)
+            self.assertIn("Coordination under weaker assumptions", page)
+            self.assertIn("planned", page)
+            self.assertIn("I finished this chapter", page)
+            self.assertNotIn("Cross-period synthesis", page)
+            self.assertNotIn("Doctoral capability rubric", page)
             self.assertIn("Foundational Coordination &lt;Study&gt;", page)
             self.assertNotIn("Foundational Coordination <Study>", page)
             self.assertNotIn("data-progress", page)
@@ -91,6 +102,127 @@ class BuildTutorialTest(unittest.TestCase):
                 copied_data["fieldQualification"]["selectionMethod"],
                 "chosen-by-user",
             )
+            self.assertEqual(len(copied_data["chapterPlan"]), 2)
+            self.assertEqual(len(copied_data["chapters"]), 1)
+
+            state = json.loads(
+                (output / "data/learning-state.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(state["status"], "awaiting-reading")
+            self.assertEqual(state["currentChapterId"], "coordination-crisis")
+            self.assertEqual(
+                [item["status"] for item in state["chapters"]],
+                ["available", "planned"],
+            )
+
+    def test_acknowledgement_unlocks_exactly_one_next_chapter(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            temporary = Path(temporary_directory)
+            output = temporary / "tutorial-site"
+            self.assertEqual(self.run_builder(output).returncode, 0)
+
+            remembered = subprocess.run(
+                [
+                    sys.executable,
+                    str(PROGRESS),
+                    "remember",
+                    "--output",
+                    str(output),
+                    "--question",
+                    "Which failure assumption is doing the real work?",
+                ],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(remembered.returncode, 0, remembered.stderr)
+            self.assertEqual(
+                json.loads(remembered.stdout)["status"], "awaiting-reading"
+            )
+
+            progress = subprocess.run(
+                [
+                    sys.executable,
+                    str(PROGRESS),
+                    "complete",
+                    "--output",
+                    str(output),
+                    "--acknowledgement",
+                    "读完了",
+                    "--reflection",
+                    "The failure model changed, not merely the implementation.",
+                ],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(progress.returncode, 0, progress.stderr)
+            progress_data = json.loads(progress.stdout)
+            self.assertEqual(progress_data["status"], "ready-to-generate")
+            self.assertEqual(
+                progress_data["currentChapter"]["id"], "weaker-assumptions"
+            )
+
+            tutorial = json.loads(FIXTURE.read_text(encoding="utf-8"))
+            next_chapter = dict(tutorial["chapters"][0])
+            next_chapter.update(
+                {
+                    "id": "weaker-assumptions",
+                    "title": "Coordination under weaker assumptions",
+                    "period": "Expansion period",
+                }
+            )
+            tutorial["chapters"].append(next_chapter)
+            next_input = temporary / "tutorial-next.json"
+            next_input.write_text(
+                json.dumps(tutorial, ensure_ascii=False), encoding="utf-8"
+            )
+            rebuilt = self.run_builder(output, "--force", input_path=next_input)
+            self.assertEqual(rebuilt.returncode, 0, rebuilt.stderr)
+
+            state = json.loads(
+                (output / "data/learning-state.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(state["status"], "awaiting-reading")
+            self.assertEqual(state["currentChapterId"], "weaker-assumptions")
+            self.assertEqual(
+                [item["status"] for item in state["chapters"]],
+                ["read", "available"],
+            )
+            acknowledgement = state["memory"]["chapterRecords"][
+                "coordination-crisis"
+            ]["acknowledgements"][0]
+            self.assertEqual(acknowledgement["text"], "读完了")
+            unresolved = state["memory"]["chapterRecords"][
+                "coordination-crisis"
+            ]["unresolvedQuestions"]
+            self.assertEqual(
+                unresolved[0]["text"],
+                "Which failure assumption is doing the real work?",
+            )
+            page = (output / "index.html").read_text(encoding="utf-8")
+            self.assertNotIn("Cross-period synthesis", page)
+
+            final_progress = subprocess.run(
+                [
+                    sys.executable,
+                    str(PROGRESS),
+                    "complete",
+                    "--output",
+                    str(output),
+                    "--acknowledgement",
+                    "I finished this chapter.",
+                ],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(final_progress.returncode, 0, final_progress.stderr)
+            final_build = self.run_builder(output, "--force", input_path=next_input)
+            self.assertEqual(final_build.returncode, 0, final_build.stderr)
+            final_page = (output / "index.html").read_text(encoding="utf-8")
+            self.assertIn("Cross-period synthesis", final_page)
+            self.assertIn("Doctoral capability rubric", final_page)
 
     def test_refuses_to_overwrite_without_force(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:

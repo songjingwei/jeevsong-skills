@@ -43,6 +43,32 @@
     ],
     "frontierContribution": "Derive and evaluate a new coordination mechanism from a historically persistent limitation."
   },
+  "chapterPlan": [
+    {
+      "id": "coordination-crisis",
+      "title": "The coordination crisis",
+      "period": "Foundational period",
+      "transitionSummary": "Scale and failure turn central coordination from a simplifying assumption into the field's binding limitation.",
+      "dependsOn": [],
+      "sourceRequirements": [
+        "Foundational system specification",
+        "Primary implementation or experiment"
+      ]
+    },
+    {
+      "id": "weaker-assumptions",
+      "title": "Coordination under weaker assumptions",
+      "period": "Expansion period",
+      "transitionSummary": "Researchers expose and relax the timing and failure assumptions inherited from the first distributed protocols.",
+      "dependsOn": [
+        "coordination-crisis"
+      ],
+      "sourceRequirements": [
+        "Turning-point paper",
+        "Critical or competing evaluation"
+      ]
+    }
+  ],
   "chapters": [
     {
       "id": "coordination-crisis",
