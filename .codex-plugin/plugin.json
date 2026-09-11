@@ -1,0 +1,24 @@
+{
+  "name": "jeevsong-skills",
+  "version": "0.1.0",
+  "description": "A collection of reusable agent skills by jeevsong.",
+  "author": {
+    "name": "jeevsong"
+  },
+  "license": "MIT",
+  "keywords": [
+    "agent-skills",
+    "codex",
+    "automation"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Jeevsong Skills",
+    "shortDescription": "Reusable agent workflows by jeevsong.",
+    "longDescription": "A growing collection of focused, reusable skills for ChatGPT, Codex, and compatible agents.",
+    "developerName": "jeevsong",
+    "category": "Developer Tools",
+    "capabilities": [],
+    "defaultPrompt": "Show me the skills included in Jeevsong Skills."
+  }
+}

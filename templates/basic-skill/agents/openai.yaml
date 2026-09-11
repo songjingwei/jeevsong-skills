@@ -1,0 +1,7 @@
+interface:
+  display_name: "Your Skill Name"
+  short_description: "Describe what this skill helps users accomplish."
+  default_prompt: "Use $your-skill-name to complete this task."
+
+policy:
+  allow_implicit_invocation: true
