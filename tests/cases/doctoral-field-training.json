@@ -1,0 +1,135 @@
+{
+  "skill": "doctoral-field-training",
+  "cases": [
+    {
+      "id": "explicit-html-tutorial",
+      "invocation": "explicit",
+      "should_activate": true,
+      "prompt": "$doctoral-field-training Create a complete Chinese HTML tutorial for reinforcement learning in /tmp/rl-doctoral-tutorial. I know machine learning and PyTorch, can spend 10 hours per week for six months, and want to develop research judgment.",
+      "expected_behaviors": [
+        "Treats reinforcement learning history as a causal problem genealogy",
+        "Builds the complete site as a collection of review-paper-style chapters whose table of contents is the learning outline",
+        "Writes the tutorial site into the exact requested folder",
+        "Generates index.html, assets/styles.css, and data/tutorial.json without an interactive training application",
+        "Verifies the generated files and reports the exact output path"
+      ]
+    },
+    {
+      "id": "implicit-technical-history",
+      "invocation": "implicit",
+      "should_activate": true,
+      "prompt": "Create a doctoral review-paper collection about databases by reconstructing their technical history: which problems produced each data model, why previous approaches failed, what evidence drove adoption, and which research questions remain.",
+      "expected_behaviors": [
+        "Recognizes the request as doctoral field training",
+        "Accepts database systems as a legitimate research direction",
+        "Asks for the output folder before producing content",
+        "Does not substitute a chat lesson, interactive coaching session, or standalone outline"
+      ]
+    },
+    {
+      "id": "missing-html-destination",
+      "invocation": "implicit",
+      "should_activate": true,
+      "prompt": "Create an offline HTML tutorial that trains me to doctoral-level competence in compiler optimization through the field's technical history.",
+      "expected_behaviors": [
+        "Asks for the output folder before writing files",
+        "Does not silently choose a destination",
+        "Retains the technical-history and review-article requirements"
+      ]
+    },
+    {
+      "id": "citation-integrity",
+      "invocation": "explicit",
+      "should_activate": true,
+      "prompt": "$doctoral-field-training Generate a complete doctoral HTML review collection for causal inference in /tmp/causal-inference-doctoral and verify every exact citation.",
+      "expected_behaviors": [
+        "Uses available research tools before treating exact citations as authoritative",
+        "Labels citation confidence according to the skill rules",
+        "Includes predecessor, turning-point, critical, and synthesis works",
+        "Produces the complete HTML collection rather than a chat-based first module"
+      ]
+    },
+    {
+      "id": "reframe-vocational-frontend-goal",
+      "invocation": "implicit",
+      "should_activate": true,
+      "prompt": "I want to become a frontend engineer. Build me a learning path that will make me an expert.",
+      "expected_behaviors": [
+        "Explicitly rejects frontend engineer as the terminal doctoral field rather than producing a framework or job-skills roadmap",
+        "Offers two to four recognized choices such as human-computer interaction or browser and web-platform systems",
+        "Explains each choice through its research object, questions, methods, practice, and recognized communities or venues",
+        "Asks the learner to choose and does not select, rank, or recommend a candidate on their behalf",
+        "Does not build the curriculum before the learner chooses"
+      ],
+      "forbidden_behaviors": [
+        "Invents and selects a hybrid field such as interactive Web systems engineering",
+        "Continues into a weekly curriculum, literature cluster, exercise, or mastery gate",
+        "Offers a React, tooling, project-delivery, interview, or crash-course roadmap"
+      ]
+    },
+    {
+      "id": "reframe-chinese-vocational-goal",
+      "invocation": "implicit",
+      "should_activate": true,
+      "prompt": "我想速成一名前端工程师，请给我安排一个 React、组件库和面试题的学习路线。",
+      "expected_behaviors": [
+        "Rejects the proposed job-skills framing while preserving the learner's underlying ambition",
+        "Does not produce a React bootcamp, interview-preparation plan, or generic frontend checklist",
+        "Provides several recognized choices such as human-computer interaction or browser and web-platform systems instead of asking the learner to invent candidates",
+        "Explains the academic or industrial research basis and research practice of every choice",
+        "Waits for the learner's explicit selection before producing a curriculum or HTML artifact"
+      ],
+      "forbidden_behaviors": [
+        "Chooses a field for the learner",
+        "Creates an 8-week or other time-boxed engineering syllabus",
+        "Treats employability, interview performance, or a portfolio project as the terminal outcome"
+      ]
+    },
+    {
+      "id": "selected-browser-doctoral-program",
+      "invocation": "explicit",
+      "should_activate": true,
+      "prompt": "$doctoral-field-training I choose browser and Web-platform systems. Build a complete Chinese doctoral tutorial in /tmp/browser-doctoral-tutorial. I have frontend experience and want to understand browser history, every consequential technical choice, Chromium source, and eventually contribute original browser optimizations.",
+      "expected_behaviors": [
+        "Records browser and Web-platform systems as explicitly chosen by the user",
+        "Builds a causal periodization from browser precursors through the current research frontier",
+        "Treats every chapter as a review article about one historical problem, competing approaches, evidence, decision, consequences, and unresolved questions",
+        "Connects historical decisions to standards, architecture documents, source code, tests, bugs, commits, benchmarks, and traces",
+        "Defines a source-mastery progression from building and tracing the browser through reproduction, instrumentation, modification, evaluation, and original contribution",
+        "Generates and verifies the complete HTML tutorial in the exact requested folder"
+      ],
+      "forbidden_behaviors": [
+        "Organizes the main curriculum as weeks of HTML, JavaScript, React, TypeScript, component libraries, build tools, or interview questions",
+        "Promises doctoral expertise through a crash course or fixed short schedule",
+        "Uses a paper list as decoration for an ordinary frontend-engineering syllabus",
+        "Stops at public browser APIs without requiring source-level investigation"
+      ]
+    },
+    {
+      "id": "selected-hci-doctoral-program",
+      "invocation": "explicit",
+      "should_activate": true,
+      "prompt": "$doctoral-field-training I choose human-computer interaction, with a focus on accessible interaction for older adults. Generate a complete doctoral HTML review collection in /tmp/hci-doctoral through the field's history and methods; do not assume this is a software-systems curriculum.",
+      "expected_behaviors": [
+        "Treats the user-selected HCI direction as a distinct research field rather than reusing the browser example",
+        "Builds a causal history around changes in interaction theory, accessibility problems, methods, evidence, and ethical standards",
+        "Uses field-appropriate primary artifacts such as study protocols, instruments, interface artifacts, datasets, observations, and participant evidence",
+        "Ends in the ability to formulate, conduct, evaluate, and defend original HCI research"
+      ],
+      "forbidden_behaviors": [
+        "Requires browser-engine or other unrelated source-code mastery",
+        "Reuses a browser subsystem history as the curriculum structure",
+        "Falls back to a generic UX portfolio or frontend job-skills roadmap"
+      ]
+    },
+    {
+      "id": "unrelated-code-fix",
+      "invocation": "negative",
+      "should_activate": false,
+      "prompt": "Fix the TypeScript type error in this React component and run the unit tests.",
+      "expected_behaviors": [
+        "Does not activate doctoral-field-training"
+      ]
+    }
+  ]
+}

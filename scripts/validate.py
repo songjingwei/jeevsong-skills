@@ -92,10 +92,99 @@ def main() -> int:
             errors += 1
         seen_names.add(skill_name)
 
+    test_case_count = 0
+    seen_case_ids: set[str] = set()
+    tested_skills: set[str] = set()
+    allowed_invocations = {"explicit", "implicit", "negative"}
+
+    for suite_path in sorted((ROOT / "tests" / "cases").glob("*.json")):
+        suite = load_json(suite_path)
+        suite_skill = suite.get("skill")
+        cases = suite.get("cases")
+
+        if suite_skill not in seen_names:
+            fail(
+                f"{suite_path.relative_to(ROOT)} references unknown skill "
+                f"{suite_skill!r}"
+            )
+            errors += 1
+        elif suite_skill in tested_skills:
+            fail(f"multiple test suites found for skill {suite_skill!r}")
+            errors += 1
+        else:
+            tested_skills.add(suite_skill)
+        if not isinstance(cases, list) or not cases:
+            fail(f"{suite_path.relative_to(ROOT)} must contain a non-empty cases list")
+            errors += 1
+            continue
+
+        for case in cases:
+            test_case_count += 1
+            if not isinstance(case, dict):
+                fail(f"{suite_path.relative_to(ROOT)} contains a non-object case")
+                errors += 1
+                continue
+
+            case_id = case.get("id")
+            invocation = case.get("invocation")
+            prompt = case.get("prompt")
+            expected = case.get("expected_behaviors")
+            forbidden = case.get("forbidden_behaviors", [])
+            should_activate = case.get("should_activate")
+
+            if not isinstance(case_id, str) or not case_id:
+                fail(f"{suite_path.relative_to(ROOT)} contains a case without an id")
+                errors += 1
+            elif case_id in seen_case_ids:
+                fail(f"duplicate test case id: {case_id}")
+                errors += 1
+            else:
+                seen_case_ids.add(case_id)
+
+            if invocation not in allowed_invocations:
+                fail(f"test case {case_id!r} has an invalid invocation")
+                errors += 1
+            if not isinstance(should_activate, bool):
+                fail(f"test case {case_id!r} must define should_activate as boolean")
+                errors += 1
+            elif invocation in allowed_invocations and should_activate != (
+                invocation != "negative"
+            ):
+                fail(f"test case {case_id!r} has inconsistent activation metadata")
+                errors += 1
+            if not isinstance(prompt, str) or not prompt.strip():
+                fail(f"test case {case_id!r} must contain a prompt")
+                errors += 1
+            elif isinstance(suite_skill, str):
+                mention = f"${suite_skill}"
+                if invocation == "explicit" and mention not in prompt:
+                    fail(f"explicit test case {case_id!r} must mention {mention}")
+                    errors += 1
+                elif invocation != "explicit" and mention in prompt:
+                    fail(f"non-explicit test case {case_id!r} cannot mention {mention}")
+                    errors += 1
+            if not isinstance(expected, list) or not expected or not all(
+                isinstance(item, str) and item.strip() for item in expected
+            ):
+                fail(f"test case {case_id!r} must contain expected behaviors")
+                errors += 1
+            if not isinstance(forbidden, list) or not all(
+                isinstance(item, str) and item.strip() for item in forbidden
+            ):
+                fail(f"test case {case_id!r} has invalid forbidden behaviors")
+                errors += 1
+
+    for untested_skill in sorted(seen_names - tested_skills):
+        fail(f"skill {untested_skill!r} has no test suite under tests/cases")
+        errors += 1
+
     if errors:
         return 1
 
-    print(f"Validated plugin {name} {version} with {len(skill_files)} skill(s).")
+    print(
+        f"Validated plugin {name} {version} with {len(skill_files)} skill(s) "
+        f"and {test_case_count} test case(s)."
+    )
     return 0
 
 

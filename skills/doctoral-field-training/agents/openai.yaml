@@ -1,0 +1,7 @@
+interface:
+  display_name: "Doctoral Field Training"
+  short_description: "Generate a doctoral review-paper collection site."
+  default_prompt: "Use $doctoral-field-training to qualify my research direction, let me choose when needed, and generate an offline HTML collection of historical review papers in my specified folder."
+
+policy:
+  allow_implicit_invocation: true

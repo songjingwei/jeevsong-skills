@@ -6,7 +6,7 @@ The repository is packaged as a skills-only plugin for ChatGPT, Codex, and compa
 
 ## Available skills
 
-- [`review-driven-learning`](skills/review-driven-learning/SKILL.md): a PhD-oriented learning coach that builds a field map, paper-review syllabus, historical problem lineage, active-recall exercises, and structured learning-package content.
+- [`doctoral-field-training`](skills/doctoral-field-training/SKILL.md): generates an offline HTML collection of interconnected review papers that develops doctoral judgment through a field's technical history, primary literature, research artifacts, and frontier.
 
 ## Repository structure
 
@@ -16,7 +16,9 @@ The repository is packaged as a skills-only plugin for ChatGPT, Codex, and compa
 ├── .codex-plugin/plugin.json   # Codex compatibility manifest
 ├── skills/                     # Installable skills
 ├── templates/basic-skill/      # Copyable starting point
-├── scripts/validate.py         # Local and CI validation
+├── tests/cases/                # Routing and behavior test cases
+├── docs/testing.md             # Local testing strategy
+├── scripts/                    # Validation and local registration
 └── .github/workflows/          # GitHub Actions
 ```
 
@@ -32,22 +34,39 @@ The directory name and the `name` in `SKILL.md` must match and use lowercase keb
 
 Use `scripts/` only for deterministic or repeated operations, `references/` for detailed material loaded on demand, and `assets/` for templates or output resources.
 
-Validate the collection before committing:
+Validate the collection and its test cases before committing:
 
 ```bash
-python3 scripts/validate.py
+make test
 ```
 
 ## Local development
 
-Codex can load repository-scoped skills from `.agents/skills`. During development, symlink a skill there instead of maintaining a second copy:
+Register every skill for repository-local Codex discovery:
 
 ```bash
-mkdir -p .agents/skills
-ln -s ../../skills/my-skill .agents/skills/my-skill
+make setup-local-test
+make check-local-test
 ```
 
-Remove development symlinks before committing unless the repository intentionally needs them.
+Then start a new Codex conversation from this repository, run `/skills`, and execute the cases under `tests/cases/`. The generated `.agents/skills/` links are ignored by Git and always point to the canonical skill sources.
+
+See [docs/testing.md](docs/testing.md) for explicit, implicit, negative, and behavior testing. Clean the generated links with `make clean-local-test`.
+
+## HTML tutorial output
+
+`doctoral-field-training` generates one deliverable: a complete offline collection of review-paper-style tutorials in a folder chosen by the user. The table of contents is the curriculum outline. Its bundled builder produces:
+
+```text
+<output-folder>/
+├── index.html
+├── assets/
+│   └── styles.css
+└── data/
+    └── tutorial.json
+```
+
+The HTML works directly from the filesystem and has no remote runtime dependencies. See the skill's [tutorial contract](skills/doctoral-field-training/references/tutorial-contract.md) for the required scholarly and presentation structure.
 
 ## Installation
 

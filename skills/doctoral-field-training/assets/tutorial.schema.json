@@ -1,0 +1,230 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/songjingwei/jeevsong-skills/schemas/doctoral-field-training-tutorial.schema.json",
+  "title": "Doctoral Field Training Tutorial",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "title",
+    "field",
+    "fieldQualification",
+    "language",
+    "doctoralOutcome",
+    "abstract",
+    "scope",
+    "thesis",
+    "reviewMethod",
+    "researchQuestions",
+    "prerequisites",
+    "researchPractice",
+    "chapters",
+    "crossChapterSynthesis",
+    "openProblems",
+    "doctoralRubric",
+    "bibliography"
+  ],
+  "properties": {
+    "title": { "type": "string", "minLength": 1 },
+    "field": { "type": "string", "minLength": 1 },
+    "fieldQualification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestedDirection",
+        "decision",
+        "admittedResearchField",
+        "selectionMethod",
+        "rationale",
+        "recognitionEvidence",
+        "adjacentFields"
+      ],
+      "properties": {
+        "requestedDirection": { "type": "string", "minLength": 1 },
+        "decision": {
+          "type": "string",
+          "enum": ["accepted", "reframed", "narrowed"]
+        },
+        "admittedResearchField": { "type": "string", "minLength": 1 },
+        "selectionMethod": {
+          "type": "string",
+          "enum": ["accepted-as-stated", "chosen-by-user"]
+        },
+        "rationale": { "type": "string", "minLength": 1 },
+        "recognitionEvidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "adjacentFields": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "language": { "type": "string", "minLength": 2 },
+    "doctoralOutcome": { "type": "string", "minLength": 1 },
+    "abstract": { "type": "string", "minLength": 1 },
+    "scope": { "type": "string", "minLength": 1 },
+    "thesis": { "type": "string", "minLength": 1 },
+    "reviewMethod": { "type": "string", "minLength": 1 },
+    "researchQuestions": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "prerequisites": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "researchPractice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["primaryArtifacts", "apprenticeshipSequence", "frontierContribution"],
+      "properties": {
+        "primaryArtifacts": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "apprenticeshipSequence": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "frontierContribution": { "type": "string", "minLength": 1 }
+      }
+    },
+    "chapters": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/chapter" }
+    },
+    "crossChapterSynthesis": { "type": "string", "minLength": 1 },
+    "openProblems": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "doctoralRubric": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["capability", "standard"],
+        "properties": {
+          "capability": { "type": "string", "minLength": 1 },
+          "standard": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "bibliography": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/work" }
+    }
+  },
+  "$defs": {
+    "priorApproach": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "contribution", "limitation"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "contribution": { "type": "string", "minLength": 1 },
+        "limitation": { "type": "string", "minLength": 1 }
+      }
+    },
+    "turningPoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "idea", "whyItWorked"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "idea": { "type": "string", "minLength": 1 },
+        "whyItWorked": { "type": "string", "minLength": 1 }
+      }
+    },
+    "work": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["citation", "role", "status"],
+      "properties": {
+        "citation": { "type": "string", "minLength": 1 },
+        "role": { "type": "string", "minLength": 1 },
+        "status": {
+          "type": "string",
+          "enum": [
+            "verified",
+            "canonical-but-unverified-in-this-session",
+            "candidate"
+          ]
+        },
+        "url": { "type": "string", "format": "uri" }
+      }
+    },
+    "chapter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "period",
+        "historicalSituation",
+        "centralProblem",
+        "priorApproaches",
+        "turningPoint",
+        "methodAndMechanism",
+        "evidenceAndEvaluation",
+        "limitationsAndDebates",
+        "downstreamInfluence",
+        "doctoralSynthesis",
+        "primaryArtifactInvestigation",
+        "learningTasks",
+        "masteryGate",
+        "works"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "title": { "type": "string", "minLength": 1 },
+        "period": { "type": "string", "minLength": 1 },
+        "historicalSituation": { "type": "string", "minLength": 1 },
+        "centralProblem": { "type": "string", "minLength": 1 },
+        "priorApproaches": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/priorApproach" }
+        },
+        "turningPoint": { "$ref": "#/$defs/turningPoint" },
+        "methodAndMechanism": { "type": "string", "minLength": 1 },
+        "evidenceAndEvaluation": { "type": "string", "minLength": 1 },
+        "limitationsAndDebates": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "downstreamInfluence": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "doctoralSynthesis": { "type": "string", "minLength": 1 },
+        "primaryArtifactInvestigation": { "type": "string", "minLength": 1 },
+        "learningTasks": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "masteryGate": { "type": "string", "minLength": 1 },
+        "works": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/work" }
+        }
+      }
+    }
+  }
+}

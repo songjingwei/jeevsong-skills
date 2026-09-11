@@ -18,4 +18,4 @@ jobs:
         with:
           python-version: "3.12"
       - name: Validate plugin and skills
-        run: python3 scripts/validate.py
+        run: make test

@@ -8,8 +8,11 @@ Contributions should keep each skill focused on one clear job.
 2. Keep the folder name and frontmatter `name` identical and in lowercase kebab-case.
 3. Make `description` specific enough to distinguish matching and non-matching requests.
 4. Add scripts, references, or assets only when they materially improve the workflow.
-5. Test the skill with representative prompts, including one prompt that should not activate it.
-6. Run `python3 scripts/validate.py`.
+5. Add or update `tests/cases/<skill-name>.json` with explicit, implicit, and negative prompts.
+6. Test the skill with representative prompts in fresh conversations.
+7. Run `make test`.
+
+Skills that generate files must include an executable fixture test. Verify the output contract and overwrite behavior rather than matching incidental prose.
 
 Avoid committing secrets, credentials, generated output, or machine-specific paths.
 

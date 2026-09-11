@@ -1,0 +1,108 @@
+{
+  "title": "A Problem History of Distributed Coordination",
+  "field": "Distributed Systems",
+  "fieldQualification": {
+    "requestedDirection": "Become a backend engineer",
+    "decision": "reframed",
+    "admittedResearchField": "Distributed Systems",
+    "selectionMethod": "chosen-by-user",
+    "rationale": "Backend engineering is a profession; distributed systems is the recognized research field matching the learner's interest in coordination under scale and failure.",
+    "recognitionEvidence": [
+      "A durable research community publishes and evaluates contributions at venues including SOSP and OSDI.",
+      "The field has established problem families, formal models, empirical methods, and unresolved research questions."
+    ],
+    "adjacentFields": [
+      "Database Systems",
+      "Computer Networks"
+    ]
+  },
+  "language": "en",
+  "doctoralOutcome": "Evaluate competing system designs and formulate a defensible research question.",
+  "abstract": "This review traces how distributed coordination changed as scale and failure exposed the limits of earlier designs.",
+  "scope": "The tutorial covers foundational designs through the first scalable architecture and excludes later product-specific variants.",
+  "thesis": "Progress came from changing the unit of coordination rather than optimizing the original mechanism.",
+  "reviewMethod": "Works are selected for their role as baseline, turning point, critique, or synthesis; exact citations are verified against primary sources.",
+  "researchQuestions": [
+    "Which limitation forced the field to change its coordination model?",
+    "What evidence justified the turning point?"
+  ],
+  "prerequisites": [
+    "Basic algorithms",
+    "Experimental design"
+  ],
+  "researchPractice": {
+    "primaryArtifacts": [
+      "System specifications",
+      "Source code and tests",
+      "Failure traces and benchmarks"
+    ],
+    "apprenticeshipSequence": [
+      "Trace one coordination behavior from specification through implementation and test.",
+      "Reproduce a failure and instrument the responsible subsystem.",
+      "Modify the mechanism and evaluate the resulting tradeoff."
+    ],
+    "frontierContribution": "Derive and evaluate a new coordination mechanism from a historically persistent limitation."
+  },
+  "chapters": [
+    {
+      "id": "coordination-crisis",
+      "title": "The coordination crisis",
+      "period": "Foundational period",
+      "historicalSituation": "Early systems optimized for small, trusted environments.",
+      "centralProblem": "The original coordination mechanism failed as participation and latency increased.",
+      "priorApproaches": [
+        {
+          "name": "Central coordination",
+          "contribution": "Established a simple and inspectable baseline.",
+          "limitation": "A single coordinator became a bottleneck and failure domain."
+        }
+      ],
+      "turningPoint": {
+        "name": "Distributed coordination",
+        "idea": "Move agreement from one coordinator to a protocol among participants.",
+        "whyItWorked": "The protocol made failure assumptions explicit and distributed responsibility."
+      },
+      "methodAndMechanism": "Participants exchange evidence and advance only after a defined agreement threshold.",
+      "evidenceAndEvaluation": "The approach is judged through safety arguments, liveness conditions, and controlled failure experiments.",
+      "limitationsAndDebates": [
+        "The model assumes bounded forms of failure.",
+        "Coordination overhead grows with participation."
+      ],
+      "downstreamInfluence": [
+        "Later work weakened timing assumptions.",
+        "New research studied coordination with adversarial participants."
+      ],
+      "doctoralSynthesis": "The learner can explain why the turning point changed the failure model rather than merely improving speed.",
+      "primaryArtifactInvestigation": "Trace the agreement threshold from its specification into source code and reproduce one controlled failure using the system tests.",
+      "learningTasks": [
+        "Reconstruct the causal transition without notes.",
+        "Design an experiment that distinguishes the two approaches."
+      ],
+      "masteryGate": "Defend which assumptions are necessary for safety and identify one researchable limitation.",
+      "works": [
+        {
+          "citation": "Example Author. Foundational Coordination <Study>.",
+          "role": "Turning-point work used to test HTML escaping and source labels.",
+          "status": "candidate"
+        }
+      ]
+    }
+  ],
+  "crossChapterSynthesis": "The transition replaced implicit trust in a coordinator with explicit assumptions distributed across a protocol.",
+  "openProblems": [
+    "How can the protocol retain its guarantees with weaker timing assumptions?"
+  ],
+  "doctoralRubric": [
+    {
+      "capability": "Causal reconstruction",
+      "standard": "Explains why each approach emerged, what it solved, and which new problem it exposed."
+    }
+  ],
+  "bibliography": [
+    {
+      "citation": "Example Author. Foundational Coordination Study.",
+      "role": "Synthetic fixture citation; not a real scholarly claim.",
+      "status": "candidate"
+    }
+  ]
+}
