@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/schemas/review-driven-learning-package.schema.json",
+  "title": "Review Driven Learning Package",
+  "type": "object",
+  "required": ["type", "version", "field", "targetLevel", "syllabus", "chapters", "paperMatrix", "prompts"],
+  "properties": {
+    "type": {
+      "const": "review-driven-learning-package"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "field": {
+      "type": "string",
+      "minLength": 1
+    },
+    "targetLevel": {
+      "type": "string",
+      "enum": ["introductory", "practitioner", "graduate", "doctoral"]
+    },
+    "learnerProfile": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "syllabus": {
+      "type": "object",
+      "required": ["centralQuestions", "historicalEpochs", "capabilityRubric"],
+      "properties": {
+        "centralQuestions": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "historicalEpochs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "title", "problem", "whyItMatters"],
+            "properties": {
+              "id": { "type": "string" },
+              "title": { "type": "string" },
+              "period": { "type": "string" },
+              "problem": { "type": "string" },
+              "whyItMatters": { "type": "string" },
+              "keyWorks": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
+          }
+        },
+        "capabilityRubric": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["capability", "doctoralStandard"],
+            "properties": {
+              "capability": { "type": "string" },
+              "doctoralStandard": { "type": "string" }
+            }
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "chapters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "path", "epochId", "masteryGate"],
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "path": { "type": "string" },
+          "epochId": { "type": "string" },
+          "masteryGate": { "type": "string" }
+        }
+      }
+    },
+    "paperMatrix": {
+      "type": "string",
+      "description": "Relative path to papers/paper-matrix.json"
+    },
+    "exercises": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "prompt"],
+        "properties": {
+          "id": { "type": "string" },
+          "type": {
+            "type": "string",
+            "enum": ["recall", "self-explanation", "comparison", "critique", "synthesis", "oral-defense", "flashcard"]
+          },
+          "prompt": { "type": "string" },
+          "relatedChapterId": { "type": "string" },
+          "relatedWorkIds": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    },
+    "prompts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["action", "path"],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "explain-selection",
+              "historical-context",
+              "why-it-mattered",
+              "compare-with-predecessor",
+              "find-hidden-assumptions",
+              "challenge-me",
+              "make-flashcards",
+              "review-my-summary",
+              "extend-paper-matrix",
+              "next-reading"
+            ]
+          },
+          "path": { "type": "string" }
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

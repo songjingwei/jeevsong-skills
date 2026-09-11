@@ -6,7 +6,7 @@ The repository is packaged as a skills-only plugin for ChatGPT, Codex, and compa
 
 ## Available skills
 
-The collection is ready for its first skill. New skills will be listed here as they are added.
+- [`review-driven-learning`](skills/review-driven-learning/SKILL.md): a PhD-oriented learning coach that builds a field map, paper-review syllabus, historical problem lineage, active-recall exercises, and structured learning-package content.
 
 ## Repository structure
 
