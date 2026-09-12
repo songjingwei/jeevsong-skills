@@ -23,6 +23,8 @@ Skill UI Studio may provide storage, retrieval, selection, annotation, and RAG i
 
 ## Reading protocol
 
+The protocol is intentionally unhurried. Its objective is durable knowledge and a self-sustaining desire to learn, not rapid content consumption. Pacing should follow comprehension: a learner may reread, investigate evidence, reproduce a result, revise an explanation, or remain with one difficult transition for as long as needed. Favor a small number of connected ideas learned deeply over broad but fragile familiarity. Do not use streaks, points, urgency, artificial scarcity, or other compulsive mechanics as a substitute for intellectual progress.
+
 1. Initialization generates the complete table of contents and Chapter 1 only.
 2. The HTML tells the learner which chapter is available and that later chapters are planned.
 3. The agent waits while the learner reads outside the conversation.
@@ -30,6 +32,8 @@ Skill UI Studio may provide storage, retrieval, selection, annotation, and RAG i
 5. Record the acknowledgement before generating exactly one next chapter.
 6. Acknowledging reading unlocks content progression; it does not assert mastery.
 7. After the final acknowledgement, finalize the whole-book synthesis and mark the workspace complete.
+
+Reading acknowledgement is a navigation signal, not a speed target or certificate of knowledge. When learner evidence shows fragile understanding, carry the relevant question, misconception, retrieval prompt, or practice need into later spaced returns. Do not shame, rush, or reset the learner; help them experience progress through increasingly independent explanation and use of the material.
 
 If the learner reports that they did not understand a chapter, preserve the question or misconception and answer or revise the current chapter. Do not advance unless they also clearly say they finished reading it.
 
