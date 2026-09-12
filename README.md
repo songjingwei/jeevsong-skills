@@ -37,8 +37,11 @@ Use `scripts/` only for deterministic or repeated operations, `references/` for 
 Validate the collection and its test cases before committing:
 
 ```bash
+npm ci
 make test
 ```
+
+Node.js 22 or newer is required to build and run the bundled skill tools. Their TypeScript sources live under each skill's `src/` directory; `npm run build` refreshes the dependency-free JavaScript committed under `scripts/`.
 
 ## Local development
 

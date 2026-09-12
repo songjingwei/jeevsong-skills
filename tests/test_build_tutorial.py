@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 import subprocess
-import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -14,14 +13,14 @@ BUILDER = (
     / "skills"
     / "doctoral-field-training"
     / "scripts"
-    / "build_tutorial.py"
+    / "build-tutorial.js"
 )
 PROGRESS = (
     ROOT
     / "skills"
     / "doctoral-field-training"
     / "scripts"
-    / "manage_progress.py"
+    / "manage-progress.js"
 )
 FIXTURE = (
     ROOT
@@ -41,7 +40,7 @@ class BuildTutorialTest(unittest.TestCase):
     ) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
             [
-                sys.executable,
+                "node",
                 str(BUILDER),
                 "--input",
                 str(input_path),
@@ -79,6 +78,8 @@ class BuildTutorialTest(unittest.TestCase):
             self.assertIn("SOSP and OSDI", page)
             self.assertIn("From primary artifacts to the frontier", page)
             self.assertIn("Primary-artifact investigation", page)
+            self.assertIn("Chapter 1", page)
+            self.assertNotIn("Chapter 0", page)
             self.assertIn("Trace the agreement threshold", page)
             self.assertIn('id="coordination-crisis"', page)
             self.assertIn("Coordination under weaker assumptions", page)
@@ -123,7 +124,7 @@ class BuildTutorialTest(unittest.TestCase):
 
             remembered = subprocess.run(
                 [
-                    sys.executable,
+                    "node",
                     str(PROGRESS),
                     "remember",
                     "--output",
@@ -142,7 +143,7 @@ class BuildTutorialTest(unittest.TestCase):
 
             progress = subprocess.run(
                 [
-                    sys.executable,
+                    "node",
                     str(PROGRESS),
                     "complete",
                     "--output",
@@ -205,7 +206,7 @@ class BuildTutorialTest(unittest.TestCase):
 
             final_progress = subprocess.run(
                 [
-                    sys.executable,
+                    "node",
                     str(PROGRESS),
                     "complete",
                     "--output",
@@ -254,6 +255,29 @@ class BuildTutorialTest(unittest.TestCase):
 
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("chosen-by-user", result.stderr)
+
+    def test_progress_cli_rejects_unknown_or_inapplicable_options(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            output = Path(temporary_directory) / "tutorial-site"
+            self.assertEqual(self.run_builder(output).returncode, 0)
+
+            result = subprocess.run(
+                [
+                    "node",
+                    str(PROGRESS),
+                    "status",
+                    "--output",
+                    str(output),
+                    "--question",
+                    "This must not be silently ignored",
+                ],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("not valid for status", result.stderr)
 
 
 if __name__ == "__main__":

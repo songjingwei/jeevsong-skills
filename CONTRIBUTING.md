@@ -14,7 +14,7 @@ Contributions should keep each skill focused on one clear job.
 
 Skills that generate files must include an executable fixture test. Verify the output contract and overwrite behavior rather than matching incidental prose.
 
-Avoid committing secrets, credentials, generated output, or machine-specific paths.
+Avoid committing secrets, credentials, user-generated artifacts, or machine-specific paths. Dependency-free JavaScript CLIs compiled from a skill's TypeScript sources are committed intentionally so an installed skill can run without development dependencies; keep them synchronized with `npm run build`.
 
 ## Pull requests
 

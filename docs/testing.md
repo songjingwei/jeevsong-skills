@@ -68,14 +68,14 @@ For `doctoral-field-training`, the automated test builds a tutorial in a tempora
 To inspect resume state:
 
 ```bash
-python3 skills/doctoral-field-training/scripts/manage_progress.py status \
+node skills/doctoral-field-training/scripts/manage-progress.js status \
   --output "$output_dir"
 ```
 
 Record a question without advancing the chapter:
 
 ```bash
-python3 skills/doctoral-field-training/scripts/manage_progress.py remember \
+node skills/doctoral-field-training/scripts/manage-progress.js remember \
   --output "$output_dir" \
   --question "Which assumption is doing the real work?"
 ```
@@ -84,7 +84,7 @@ To inspect a generated fixture manually:
 
 ```bash
 output_dir="$(mktemp -d)/doctoral-tutorial"
-python3 skills/doctoral-field-training/scripts/build_tutorial.py \
+node skills/doctoral-field-training/scripts/build-tutorial.js \
   --input tests/fixtures/doctoral-field-training/tutorial.json \
   --output "$output_dir"
 echo "$output_dir/index.html"

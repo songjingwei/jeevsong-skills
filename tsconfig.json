@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "rootDir": "skills/doctoral-field-training/src",
+    "outDir": "skills/doctoral-field-training/scripts",
+    "strict": true,
+    "skipLibCheck": true,
+    "declaration": false,
+    "sourceMap": false
+  },
+  "include": ["skills/doctoral-field-training/src/**/*.ts"]
+}

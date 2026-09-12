@@ -37,7 +37,7 @@ Reading acknowledgement is a navigation signal, not a speed target or certificat
 
 If the learner reports that they did not understand a chapter, preserve the question or misconception and answer or revise the current chapter. Do not advance unless they also clearly say they finished reading it.
 
-Use `manage_progress.py remember` as soon as a durable question, reflection, misconception, or mastery observation appears. This operation does not change chapter progression.
+Use `node <skill-directory>/scripts/manage-progress.js remember` as soon as a durable question, reflection, misconception, or mastery observation appears. This operation does not change chapter progression.
 
 ## Memory contract
 

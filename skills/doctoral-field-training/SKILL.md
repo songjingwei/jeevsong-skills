@@ -41,7 +41,7 @@ Read only the references required by the current state:
 - For every new, advancing, or resumed workspace, read `references/tutorial-contract.md` and `references/learning-loop-and-memory.md`.
 - When the field centers on a large technical system such as a browser, operating system, database, compiler, or runtime, also read `references/research-system-training.md`.
 
-Use `assets/tutorial.schema.json`, `assets/learning-state.schema.json`, `scripts/build_tutorial.py`, and `scripts/manage_progress.py` as specified by those references.
+Use `assets/tutorial.schema.json`, `assets/learning-state.schema.json`, `scripts/build-tutorial.js`, and `scripts/manage-progress.js` as specified by those references. The committed JavaScript CLIs have no package dependencies at runtime and require Node.js 22 or newer.
 
 ## Inputs
 
@@ -63,7 +63,7 @@ Use supplied background, ambition, language, accessibility, and citation prefere
 5. Build with:
 
    ```bash
-   python3 <skill-directory>/scripts/build_tutorial.py \
+   node <skill-directory>/scripts/build-tutorial.js \
      --input <path-to-tutorial.json> \
      --output <user-specified-folder>
    ```
@@ -75,14 +75,14 @@ Use supplied background, ambition, language, accessibility, and citation prefere
 ### Await and advance
 
 - While awaiting reading, answer questions or revise the current chapter without generating the next one.
-- Immediately persist durable learner-authored questions, reflections, misconceptions, or demonstrated mastery with `manage_progress.py remember`.
-- On explicit reading completion, read both canonical JSON files and run `manage_progress.py complete`, preserving the exact acknowledgement and supplied evidence.
+- Immediately persist durable learner-authored questions, reflections, misconceptions, or demonstrated mastery with `node <skill-directory>/scripts/manage-progress.js remember`.
+- On explicit reading completion, read both canonical JSON files and run `node <skill-directory>/scripts/manage-progress.js complete`, preserving the exact acknowledgement and supplied evidence.
 - Reading completion unlocks content progression but never proves mastery. Carry fragile understanding into later spaced retrieval and practice without shaming, rushing, or resetting the learner.
 - If a chapter remains, research and append exactly that chapter, rebuild with `--force`, verify, and ask the learner to read it. If none remains, finalize the whole-book outputs and completion state.
 
 ### Resume
 
-Run `manage_progress.py status`, inspect both canonical JSON files, and report the admitted field, thesis, last acknowledged chapter, current or next chapter, unresolved questions, and failures. Continue from canonical state rather than conversational recollection. If the files conflict, preserve them and ask before repair; derived indexes never override them.
+Run `node <skill-directory>/scripts/manage-progress.js status`, inspect both canonical JSON files, and report the admitted field, thesis, last acknowledged chapter, current or next chapter, unresolved questions, and failures. Continue from canonical state rather than conversational recollection. If the files conflict, preserve them and ask before repair; derived indexes never override them.
 
 ## Boundaries
 
