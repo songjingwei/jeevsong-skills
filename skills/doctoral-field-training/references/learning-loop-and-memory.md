@@ -12,21 +12,21 @@ Skill UI Studio may provide storage, retrieval, selection, annotation, and RAG i
 
 ```text
 <output-folder>/
-├── index.html
-├── assets/styles.css
-└── data/
+├── data/
     ├── tutorial.json
     └── learning-state.json
+├── index.html          # optional static export
+└── assets/styles.css   # optional static export asset
 ```
 
-`tutorial.json` contains the global review design, complete chapter plan, and only the chapter bodies generated so far. `learning-state.json` contains progression, acknowledgements, learner memory, provenance, and an append-only event trail. Treat embeddings, RAG chunks, summaries, and Wiki pages as derived views that can be rebuilt from these files.
+`tutorial.json` contains the global review design, complete chapter plan, and only the chapter bodies generated so far. `learning-state.json` contains progression, acknowledgements, learner memory, provenance, and an append-only event trail. Treat static HTML, embeddings, RAG chunks, summaries, and Wiki pages as derived views that can be rebuilt from these files.
 
 ## Reading protocol
 
 The protocol is intentionally unhurried. Its objective is durable knowledge and a self-sustaining desire to learn, not rapid content consumption. Pacing should follow comprehension: a learner may reread, investigate evidence, reproduce a result, revise an explanation, or remain with one difficult transition for as long as needed. Favor a small number of connected ideas learned deeply over broad but fragile familiarity. Do not use streaks, points, urgency, artificial scarcity, or other compulsive mechanics as a substitute for intellectual progress.
 
 1. Initialization generates the complete table of contents and Chapter 1 only.
-2. The HTML tells the learner which chapter is available and that later chapters are planned.
+2. The selected reader—Canon or the static HTML export—tells the learner which chapter is available and that later chapters are planned.
 3. The agent waits while the learner reads outside the conversation.
 4. An explicit statement such as “读完了”, “这一章读完了”, or “I finished the chapter” acknowledges reading. A question, revision request, “继续解释”, “好的”, or mere passage of time does not.
 5. Record the acknowledgement before generating exactly one next chapter.
@@ -67,4 +67,4 @@ Read and validate both canonical JSON files, then report the admitted field and 
 
 ## Optional Studio integration
 
-When Skill UI Studio is available, declare the `learning.research-reader` profile and map the canonical records to its memory interface. Studio may enable selection questions, region questions, sidebar questions, diffs, and semantic retrieval. These interactions must write accepted durable results back to the canonical files or a lossless export compatible with them. Studio failure must not prevent local HTML reading or file-based resume.
+When Skill UI Studio is available, declare the `learning.research-reader` profile and map the canonical records to its memory interface. Studio may enable selection questions, region questions, sidebar questions, diffs, and semantic retrieval. These interactions must write accepted durable results back to the canonical files or a lossless export compatible with them. Studio failure must not prevent Canon rendering, optional static HTML reading, or file-based resume.

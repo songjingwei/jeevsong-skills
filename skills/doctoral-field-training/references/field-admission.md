@@ -21,7 +21,7 @@ For a reframed or narrowed request:
 3. Establish each candidate with its communities, venues, methods, or canonical problem families.
 4. Compare research object, characteristic questions, methods, expected research practice, and connection to the original motivation.
 5. Ask the learner to choose. Do not select, recommend, rank, or silently default.
-6. Stop. Do not design the review, select literature, or generate HTML until the learner explicitly chooses.
+6. Stop. Do not design the review, select literature, or generate the tutorial workspace until the learner explicitly chooses.
 7. After selection, record the original wording, admission decision, chosen field, rationale, recognition evidence, and adjacent fields.
 
 The skill owns candidate discovery and qualification; the learner owns the final research identity. Do not delegate normalization by merely asking “which research field do you mean?” Do not reject the learner's ambition; reject only the invalid framing and replace it constructively.
